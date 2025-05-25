@@ -1,0 +1,56 @@
+# ~/.bashrc: executed by bash(1) for non-login shells.
+
+# If not running interactively, don't do anything
+case $- in
+    *i*) ;;
+      *) return;;
+esac
+
+# Set a simple prompt: username@hostname:current_directory$
+PS1='\u@\h:\W\$ '
+
+# Aliases for navigating ~/Documents/Scripts and subdirectories
+
+# Navigate to ~/Documents/Scripts
+alias cds='cd ~/Documents/Scripts'
+
+# Clear terminal and center cursor
+alias midclear='clear && tput cup $(( $(tput lines) / 2 )) 0'
+
+
+# Create today's directory, link Learning-AWK-Programming-master, and cd to it
+# Enable colored output for ls, grep, etc.
+alias ls='ls --color=auto'
+alias grep='grep --color=auto'
+alias fgrep='fgrep --color=auto'
+alias egrep='egrep --color=auto'alias mkdd='
+  today_dir=~/Documents/Scripts/$(date +%Y-%m-%d);
+  mkdir -p "$today_dir";
+  ln -sf ~/Documents/Scripts/Learning-AWK-Programming-master "$today_dir/Learning-AWK-Programming-master";
+  cd "$today_dir"
+
+'
+
+# Change to the most recent date directory
+alias cdmr='
+  latest_dir=$(find ~/Documents/Scripts -maxdepth 1 -type d -name "[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]" | sort -r | head -n 1);
+  [ -d "$latest_dir" ] && cd "$latest_dir" || echo "No date directory found"
+'
+
+# Source global definitions if they exist
+if [ -f /etc/bash.bashrc ]; then
+    . /etc/bash.bashrc
+fi
+
+# Enable programmable completion features (if available)
+if ! shopt -oq posix; then
+  if [ -f /usr/share/bash-completion/bash_completion ]; then
+    . /usr/share/bash-completion/bash_completion
+  elif [ -f /etc/bash_completion ]; then
+    . /etc/bash_completion
+  fi
+fi
+export HISTTIMEFORMAT="%F %T "  # Add timestamp to history
+export PROMPT_COMMAND='if [ $? -eq 0 ]; then echo "$(history 1) [EXIT:0]" >> ~/.custom_history; else echo "$(history 1) [EXIT:$?]" >> ~/.custom_history; fi'
+eval "$(starship init bash)"
+eval "$(starship init bash)"
