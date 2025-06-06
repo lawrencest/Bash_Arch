@@ -1,0 +1,81 @@
+# ~/.zshrc: executed by zsh(1) for interactive shells.
+
+# If not running interactively, don't do anything
+[[ -o interactive ]] || return
+
+# Set a simple prompt: username@hostname:current_directory$
+# Note: Zsh uses % instead of \ for prompt sequences
+setopt PROMPT_SUBST
+PROMPT='%n@%m:%1d$ '
+
+# Aliases for navigating ~/Documents/Scripts and subdirectories
+
+# Navigate to ~/Documents/Scripts
+alias cds='cd ~/Documents/Scripts'
+alias ll="ls -lah"
+alias home="cd ~"
+alias up="cd .."
+
+# Clear terminal and center cursor
+# Zsh uses the same `tput` command, so this is unchanged
+alias midclear='clear && tput cup $(( $(tput lines) / 2 )) 0'
+
+# Enable colored output for ls, grep, etc.
+# Zsh supports `--color=auto` like Bash
+alias ls='ls --color=auto'
+alias grep='grep --color=auto'
+alias fgrep='fgrep --color=auto'
+alias egrep='egrep --color=auto'
+
+# Create today's directory, link Learning-AWK-Programming-master, and cd to it
+# Zsh handles multi-line aliases similarly, but we use Zsh syntax for clarity
+alias mkdd='
+  today_dir=~/Documents/Scripts/$(date +%Y-%m-%d);
+  mkdir -p "$today_dir";
+  ln -sf ~/Documents/Scripts/Learning-AWK-Programming-master "$today_dir/Learning-AWK-Programming-master";
+  cd "$today_dir"
+'
+
+# Change to the most recent date directory
+# Zsh uses similar command substitution and logic
+alias cdmr='
+  latest_dir=$(find ~/Documents/Scripts -maxdepth 1 -type d -name "[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]" | sort -r | head -n 1);
+  [[ -d "$latest_dir" ]] && cd "$latest_dir" || echo "No date directory found"
+'
+
+# Source global definitions if they exist
+# Adjust path for Zsh's typical global config location
+[[ -f /etc/zsh/zshrc ]] && source /etc/zsh/zshrc
+
+# Enable programmable completion features
+# Zsh has its own completion system, so we initialize it
+autoload -Uz compinit
+compinit
+# Optional: Improve completion behavior
+zstyle ':completion:*' menu select
+zstyle ':completion:*' matcher-list 'm:{a-zA-Z}={A-Za-z}' # Case-insensitive completion
+
+# History settings
+# Zsh uses HISTFILE, HISTSIZE, and SAVEHIST for history
+export HISTFILE=~/.zsh_history
+export HISTSIZE=10000
+export SAVEHIST=10000
+export HISTTIMEFORMAT="%F %T "  # Add timestamp to history
+setopt HIST_IGNORE_DUPS         # Ignore duplicate commands
+setopt HIST_IGNORE_SPACE        # Ignore commands starting with a space
+setopt APPEND_HISTORY           # Append to history file
+
+# Custom history logging with exit status
+# Zsh's precmd hook is equivalent to Bash's PROMPT_COMMAND
+precmd() {
+  local exit_status=$?
+  if [[ $exit_status -eq 0 ]]; then
+    print -r -- "$(history -1) [EXIT:0]" >> ~/.custom_history
+  else
+    print -r -- "$(history -1) [EXIT:$exit_status]" >> ~/.custom_history
+  fi
+}
+h() { history | grep -i "$1" }
+# Initialize Starship prompt (if installed)
+# Starship is cross-shell, so this remains the same
+eval "$(starship init zsh)"
