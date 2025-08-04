@@ -24,6 +24,8 @@ alias ls='ls --color=auto'
 alias grep='grep --color=auto'
 alias fgrep='fgrep --color=auto'
 alias egrep='egrep --color=auto'alias mkdd='
+alias fzfp='fzf --preview 'bat --style=numbers --color=always {}' --preview-window right:50%'
+
   today_dir=~/Documents/Scripts/$(date +%Y-%m-%d);
   mkdir -p "$today_dir";
   ln -sf ~/Documents/Scripts/Learning-AWK-Programming-master "$today_dir/Learning-AWK-Programming-master";
