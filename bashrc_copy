@@ -1,1 +1,44 @@
 
+# ~/.bashrc
+
+# If not running interactively, don't do anything
+[[ $- != *i* ]] && return
+
+# Source global bash configurations if they exist
+if [ -f /etc/bash.bashrc ]; then
+    . /etc/bash.bashrc
+fi
+
+# Set up Starship prompt
+eval "$(starship init bash)"
+
+# Aliases
+alias fzfp='fzf --preview "bat --style=numbers --color=always {}" --preview-window right:50%'
+
+# Basic settings
+export EDITOR=nano  # Set default editor (change to vim, nvim, etc., if preferred)
+export VISUAL="$EDITOR"
+
+# History settings
+HISTSIZE=1000
+HISTFILESIZE=2000
+HISTCONTROL=ignoreboth  # Don't save commands starting with space or duplicates
+
+# Enable color support for ls and grep
+if [ -x /usr/bin/dircolors ]; then
+    test -r ~/.dircolors && eval "$(dircolors -b ~/.dircolors)" || eval "$(dircolors -b)"
+    alias ls='ls --color=auto'
+    alias grep='grep --color=auto'
+fi
+
+# Add user-specific bin directory to PATH if it exists
+if [ -d "$HOME/.local/bin" ]; then
+    PATH="$HOME/.local/bin:$PATH"
+fi
+
+# Enable programmable completion features
+if [ -f /usr/share/bash-completion/bash_completion ]; then
+    . /usr/share/bash-completion/bash_completion
+elif [ -f /etc/bash_completion ]; then
+    . /etc/bash_completion
+fi
